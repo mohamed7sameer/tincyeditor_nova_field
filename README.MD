@@ -1,3 +1,14 @@
+# Tincymice Editor For Laravel Nove
+
+```shell
+php artisan nova:field mohammed2617/tincyeditor
+cd nova-components/tincyeditor
+npm run watch
+```
+
+Edit resources/js/components/FromField.js
+
+```php
 <template>
   <DefaultField
     :field="field"
@@ -99,3 +110,31 @@ export default {
   },
 }
 </script>
+```
+
+```shell
+cd public
+mkdir admin
+cd admin
+git clone https://github.com/mohamed7sameer/tinymce
+```
+
+```php
+namespace App\Providers;
+class NovaServiceProvider extends NovaApplicationServiceProvider
+{
+    public function boot()
+    {
+        parent::boot();
+            Nova::remoteScript(asset('admin/tinymce/tinymce.min.js'));
+    }
+}
+```
+
+
+```php
+Tincyeditor::make('description')->hideFromIndex(),
+```
+
+
+

@@ -34,12 +34,64 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   mixins: [laravel_nova__WEBPACK_IMPORTED_MODULE_0__.FormField, laravel_nova__WEBPACK_IMPORTED_MODULE_0__.HandlesValidationErrors],
   props: ['resourceName', 'resourceId', 'field'],
+  created: function created() {},
+  beforeMount: function beforeMount() {},
+  mounted: function mounted() {
+    var _this = this;
+    this.$nextTick(function () {
+      _this.setEditor();
+    });
+  },
+  beforeUpdate: function beforeUpdate() {},
+  updated: function updated() {},
+  beforeUnmount: function beforeUnmount() {
+    tinymce.remove("#" + this.field.attribute);
+  },
+  unmounted: function unmounted() {},
+  errorCaptured: function errorCaptured() {},
+  activated: function activated() {},
+  deactivated: function deactivated() {},
+  serverPrefetch: function serverPrefetch() {},
   methods: {
     /*
      * Set the initial, internal value for the field.
      */
     setInitialValue: function setInitialValue() {
       this.value = this.field.value || '';
+    },
+    setEditor: function setEditor() {
+      var _this2 = this;
+      var useDarkMode = false;
+      tinymce.init({
+        "selector": "#" + this.field.attribute,
+        plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
+        menubar: 'file edit view insert format tools table help',
+        toolbar: "undo redo | accordion accordionremove | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | charmap emoticons | code fullscreen preview | save print | pagebreak anchor codesample | ltr rtl",
+        autosave_ask_before_unload: true,
+        autosave_interval: '30s',
+        autosave_prefix: '{path}{query}-{id}-',
+        autosave_restore_when_empty: false,
+        autosave_retention: '2m',
+        image_advtab: true,
+        importcss_append: true,
+        height: 600,
+        image_caption: true,
+        quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+        noneditable_class: 'mceNonEditable',
+        toolbar_mode: 'sliding',
+        contextmenu: 'link image table',
+        skin: useDarkMode ? 'oxide-dark' : 'oxide',
+        content_css: useDarkMode ? 'dark' : 'default',
+        setup: function setup(editor) {
+          editor.on('change', function () {
+            // console.log(editor.getContent())
+            editor.save();
+            // this.value = editor.getContent();
+            _this2.value = _this2.field.value = editor.getContent();
+            // get the editor value and set it in this.value
+          });
+        }
+      });
     },
     /**
      * Fill the given FormData object with the field's internal value.
@@ -122,10 +174,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "full-width-content": _ctx.fullWidthContent
   }, {
     field: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
         id: $props.field.attribute,
         type: "text",
-        "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["w-full form-control form-input form-control-bordered", _ctx.errorClasses]),
+        "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(_ctx.errorClasses),
         placeholder: $props.field.name,
         "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
           return _ctx.value = $event;
