@@ -88,6 +88,11 @@ export default {
           contextmenu: 'link image table',
           skin: useDarkMode ? 'oxide-dark' : 'oxide',
           content_css: useDarkMode ? 'dark' : 'default',
+
+          images_upload_url: '/api/upload_tinymce_image',
+          automatic_uploads: true,
+
+
           setup: (editor)=> {
               editor.on('change', ()=> {
                 // console.log(editor.getContent())
@@ -119,6 +124,7 @@ cd admin
 git clone https://github.com/mohamed7sameer/tinymce
 ```
 
+
 ```php
 namespace App\Providers;
 class NovaServiceProvider extends NovaApplicationServiceProvider
@@ -138,3 +144,98 @@ Tincyeditor::make('description')->hideFromIndex(),
 
 
 
+```php
+namespace App\Helper;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Intervention\Image\Laravel\Facades\Image;
+class MoHelper {
+    public static function ConvetToWebp($request,$name = 'image',$disk="public",$path="tiny"){
+        $file = $request->file($name);
+        $filename = 'image_' . time() . '_' . Str::random(10) . '.webp';
+        $image = Image::read($file->getRealPath());
+        Storage::disk($disk)->put($path . '/' .$filename, $image->toWebp(60));
+        return $filename ;
+    }
+    public static function slug($slug,$model,$id=null)
+    {
+        $exists = $model->where('slug', $slug)->when($id, function ($query, $id) {
+            return $query->where('id', '!=', $id);
+        })
+        ->exists();
+        if ($exists) {
+            $slug = $slug . '-1';
+            return MoHelper::slug($slug, $model, $id);
+
+        }
+        return $slug  ;
+    }
+    public static function initSlug($request,$model,$attribute,$t)
+    {
+        /*********************
+        * Insert It Into Laravel Nova Field
+            ->fillUsing(
+                function ($request, $model, $attribute, $requestAttribute) {
+                    MoHelper::initSlug($request,$model,$attribute,$this);
+                }
+            ),
+        **********************/
+        if (!$request->slug) {
+            $slug = Str::slug($request->title);
+            $val = MoHelper::slug($slug, $model,$t->getKey());
+        }else{
+            $slug = Str::slug($request->slug);
+            $val = MoHelper::slug($slug, $model,$t->getKey());
+        }  
+        return $model->{$attribute} = $val;
+    }
+    public static function storTinymceImage($request)
+    {
+        $request->validate([
+            'file' => [
+                'required',
+                'image',
+                'mimes:jpeg,png,jpg,gif,svg',
+                'max:10240',
+            ]
+        ]);
+        if (!$request->hasFile('file')) {
+            return response()->json(['error' => 'No file uploaded.'], 400);
+        }
+        $file = $request->file('file');
+        $path = $file->store('/', 'tinymce');
+
+        $filename = MoHelper::ConvetToWebp($request,'file','tinymce','tiny');
+        return response()->json(['location' => app('filesystem')->disk('tinymce')->url($filename)]);
+    }
+}
+```
+
+
+```php
+return [    
+  'disks' => [
+    'tinymce' => [
+      'driver' => 'local',
+      'root' => env('MO_STORAGE_FOLDER_TINYMCE'),
+      'url' => env('APP_URL').'/mo/storage/image_e/tiny',
+      'visibility' => 'public',
+      'throw' => false,
+    ],
+  ];
+];
+```
+
+```php
+MO_STORAGE_FOLDER_TINYMCE="C:/laragon/www/cesr/public/mo/storage/image_e"
+```
+
+```shell
+php artisan install:api
+```
+
+```php
+Route::post('/upload_tinymce_image', function(Request $request){
+    return MoHelper::storTinymceImage($request);
+});
+```

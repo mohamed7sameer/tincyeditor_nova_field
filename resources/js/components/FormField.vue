@@ -48,8 +48,8 @@ export default {
 
   methods: {
     /*
-     * Set the initial, internal value for the field.
-     */
+      * Set the initial, internal value for the field.
+    */
     setInitialValue() {
       this.value = this.field.value || ''
     },
@@ -77,13 +77,18 @@ export default {
           contextmenu: 'link image table',
           skin: useDarkMode ? 'oxide-dark' : 'oxide',
           content_css: useDarkMode ? 'dark' : 'default',
+          // images_upload_url: '/mo/storage',
+          images_upload_url: '/api/upload_tinymce_image',
+          automatic_uploads: true,
+
+
+
+
+
           setup: (editor)=> {
               editor.on('change', ()=> {
-                // console.log(editor.getContent())
                 editor.save();
-                // this.value = editor.getContent();
-                this.value = this.field.value = editor.getContent();
-                // get the editor value and set it in this.value
+                this.value = this.field.value = editor.getContent();                
               });
             }
       });

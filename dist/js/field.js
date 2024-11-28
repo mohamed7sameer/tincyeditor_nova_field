@@ -54,8 +54,8 @@ __webpack_require__.r(__webpack_exports__);
   serverPrefetch: function serverPrefetch() {},
   methods: {
     /*
-     * Set the initial, internal value for the field.
-     */
+      * Set the initial, internal value for the field.
+    */
     setInitialValue: function setInitialValue() {
       this.value = this.field.value || '';
     },
@@ -82,13 +82,13 @@ __webpack_require__.r(__webpack_exports__);
         contextmenu: 'link image table',
         skin: useDarkMode ? 'oxide-dark' : 'oxide',
         content_css: useDarkMode ? 'dark' : 'default',
+        // images_upload_url: '/mo/storage',
+        images_upload_url: '/api/upload_tinymce_image',
+        automatic_uploads: true,
         setup: function setup(editor) {
           editor.on('change', function () {
-            // console.log(editor.getContent())
             editor.save();
-            // this.value = editor.getContent();
             _this2.value = _this2.field.value = editor.getContent();
-            // get the editor value and set it in this.value
           });
         }
       });
