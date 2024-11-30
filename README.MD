@@ -2,8 +2,9 @@
 
 ```shell
 php artisan nova:field mohammed2617/tincyeditor
-cd nova-components/tincyeditor
+cd nova-components/Tincyeditor
 npm run watch
+
 ```
 
 Edit resources/js/components/FromField.js
@@ -118,6 +119,13 @@ export default {
 ```
 
 ```shell
+npm run prod
+cd ..
+cd ..
+php artisan install:api
+# cd ..
+# cd ..
+# cd public_html
 cd public
 mkdir admin
 cd admin
@@ -138,13 +146,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 ```
 
 
-```php
-Tincyeditor::make('description')->hideFromIndex(),
-```
-
-
 
 ```php
+<?php
 namespace App\Helper;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -230,12 +234,39 @@ return [
 MO_STORAGE_FOLDER_TINYMCE="C:/laragon/www/cesr/public/mo/storage/image_e"
 ```
 
-```shell
-php artisan install:api
-```
 
 ```php
 Route::post('/upload_tinymce_image', function(Request $request){
     return MoHelper::storTinymceImage($request);
 });
 ```
+
+
+
+
+```php
+Tincyeditor::make('description')->hideFromIndex(),
+```
+
+```shell
+php artisan optimize:clear
+```
+
+
+# npm Share host
+
+https://github.com/mohamed7sameer/senior_laravel/blob/main/1-laravel_a.md
+https://nodejs.org/dist/
+
+```shell
+wget https://nodejs.org/dist/v23.3.0/node-v23.3.0-linux-x64.tar.gz
+```
+extract it before public
+rename it to libraries/npm
+
+```shell
+echo 'export PATH=libraries/npm/bin' >> ~.bashrc
+node -v
+npm -v
+```
+
